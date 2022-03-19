@@ -1,5 +1,5 @@
-import constants
-from game.shared.color import Color
+# import constants
+
 from game.shared.point import Point
 
 
@@ -21,7 +21,7 @@ class Actor:
         """Constructs a new Actor."""
         self._text = ""
         self._font_size = 15
-        self._color = Color(255, 255, 255)
+        # self._color = Color(255, 255, 255)
         self._position = Point(0, 0)
         self._velocity = Point(0, 0)
 
@@ -116,28 +116,4 @@ class Actor:
             velocity (Point): The given velocity.
         """
         self._velocity = velocity
-      #  =======================
-
-    #   from game.casting.text import Text
-
-
-class Actor:
-    """A thing that participates in the game."""
-    
-    def __init__(self, debug = False):
-        """Constructs a new Actor using the given group and id.
-        
-        Args:
-            group: A string containing the actor's group name.
-            id: A number that uniquely identifies the actor within the group.
-        """
-        self._debug = debug
-        
-    def is_debug(self):
-        """Whether or not the actor is being debugged.
-        
-        Returns:
-            True if the actor is being debugged; False if otherwise.
-        """
-        return self._debug
-
+ 

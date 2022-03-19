@@ -2,8 +2,8 @@ import os
 import pathlib
 import pyray
 from constants import *
-from game.casting.color import Color
-from game.casting.text import Text
+from game.shared.color import Color
+# from game.casting.text import Text
 from game.services.video_service import VideoService 
 
 

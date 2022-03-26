@@ -1,11 +1,13 @@
 import csv
 import imp
+# from car_game.game.casting.car_2 import Car_2
 from constants import *
 from game.casting.animation import Animation
 from game.casting.ball import Ball
 
 #car_code
 from game.casting.car import Car
+ 
 
 from game.casting.body import Body
 from game.casting.brick import Brick
@@ -120,7 +122,18 @@ class SceneManager:
         #self._add_ball(cast)
         
         #car_code
-        self._add_car(cast)
+        car_number = 300
+        
+        
+        car_number_2 = 600
+          
+        car_1=  self._add_car(cast, car_number_2, CAR_IMAGE_2)
+        
+        cast.add_actor("traffic", car_1)
+        car = self._add_car(cast, car_number, CAR_IMAGE)
+        
+        cast.add_actor(CAR_GROUP, car)
+      
         
         #self._add_bricks(cast)
         #self._add_racket(cast)
@@ -196,17 +209,19 @@ class SceneManager:
         cast.add_actor(BALL_GROUP, ball)
     
     #car_code
-    def _add_car(self, cast):
+    def _add_car(self, cast, screen, image_file):
         cast.clear_actors(CAR_GROUP)
         x = CENTER_X - CAR_WIDTH / 2
-        y = SCREEN_HEIGHT - RACKET_HEIGHT - CAR_HEIGHT  
+        y = screen - RACKET_HEIGHT - CAR_HEIGHT  
         position = Point(x, y)
         size = Point(CAR_WIDTH, CAR_HEIGHT)
         velocity = Point(0, 0)
         body = Body(position, size, velocity)
-        image = Image(CAR_IMAGE)
+        image = Image(image_file)
+        
         car = Car(body, image, True)
-        cast.add_actor(CAR_GROUP, car)
+        return car
+        
 
     def _add_bricks(self, cast):
         cast.clear_actors(BRICK_GROUP)

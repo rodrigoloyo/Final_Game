@@ -93,7 +93,8 @@ SCORE_FORMAT = "SCORE: {}"
 # CARS
 #car_code
 CAR_GROUP = "cars"
-CAR_IMAGE = "car_game/assets/images\\white_cars.png"
+CAR_IMAGE = "car_game/assets/images\\police_car.png"
+CAR_IMAGE_2 = "car_game/assets/images\\orange_flame.png"
 CAR_WIDTH = 120
 CAR_HEIGHT = 254
 CAR_VELOCITY = 10

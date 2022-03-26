@@ -1,16 +1,17 @@
+from cgitb import text
 import os
 import pathlib
 import pyray
 from constants import *
-from game.shared.color import Color
-# from game.casting.text import Text
+from game.casting.color import Color
+from game.casting.text import Text
 from game.services.video_service import VideoService 
 
 
 class RaylibVideoService(VideoService):
     """ A Raylib implementation of VideoService."""
 
-    def __init__(self, title = "", width = 640, height = 480, color = BLACK):
+    def __init__(self, title = "", width = 640, height = 480, color = Color(0,0,255)):
         self._title = title
         self._width = width
         self._height = height
@@ -47,6 +48,7 @@ class RaylibVideoService(VideoService):
             pyray.draw_rectangle_lines(x, y, width, height, raylib_color)
 
     def draw_text(self, text, position):
+        
         filepath = text.get_fontfile()
         value = text.get_value()
         size = text.get_size()

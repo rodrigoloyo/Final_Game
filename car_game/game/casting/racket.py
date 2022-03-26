@@ -1,13 +1,12 @@
-import random
 from constants import *
 from game.casting.actor import Actor
 from game.casting.point import Point
 
 
-class Car(Actor):
-    """A solid, spherical object that is bounced around in the game."""
+class Racket(Actor):
+    """A implement used to hit and bounce the ball in the game."""
     
-    def __init__(self, body, image, debug = False):
+    def __init__(self, body, animation, debug = False):
         """Constructs a new Bat.
         
         Args:Args:
@@ -17,15 +16,15 @@ class Car(Actor):
         """
         super().__init__(debug)
         self._body = body
-        self._image = image
+        self._animation = animation
 
-    def get_image(self):
-        """Gets the ball's image.
+    def get_animation(self):
+        """Gets the bat's animation.
         
         Returns:
-            An instance of Image.
+            An instance of Animation.
         """
-        return self._image
+        return self._animation
 
     def get_body(self):
         """Gets the bat's body.
@@ -44,20 +43,12 @@ class Car(Actor):
 
     def swing_left(self):
         """Steers the bat to the left."""
-        velocity = Point(-CAR_VELOCITY, 0)
+        velocity = Point(-RACKET_VELOCITY, 0)
         self._body.set_velocity(velocity)
         
     def swing_right(self):
         """Steers the bat to the right."""
-        velocity = Point(CAR_VELOCITY, 0)
-        self._body.set_velocity(velocity)
-
-    def swing_up(self):
-        velocity = Point(0, -CAR_VELOCITY)
-        self._body.set_velocity(velocity)
-    
-    def swing_down(self):
-        velocity = Point(0, CAR_VELOCITY)
+        velocity = Point(RACKET_VELOCITY, 0)
         self._body.set_velocity(velocity)
     
     def stop_moving(self):

@@ -25,7 +25,7 @@ class VideoService:
         Args:
             size: An instance of batter.casting.point.
             position: An instance of batter.casting.point.
-            color: An instance of batter.casting.color.
+            color: An instance of casting.color.
         """
         raise NotImplementedError("not implemented in base class")
 
@@ -34,7 +34,7 @@ class VideoService:
         on the screen until flush_buffer() is called.
 
         Args:
-            text: An instance of batter.casting.text.
+            text: An instance of casting.text.
             position: An instance of batter.casting.point.
 
         Raises:

@@ -1,14 +1,12 @@
+from raylib import GROUP_PADDING
 from constants import *
-from game.scripting.action import Action
+from game.scripting.draw_car_action import DrawCarAction
 
 
-class DrawCarAction(Action):
+class DrawTrafficAction(DrawCarAction):
 
-    def __init__(self, video_service):
-        self._video_service = video_service
-        
     def execute(self, cast, script, callback):
-        car = cast.get_first_actor(CAR_GROUP)
+        car = cast.get_first_actor("traffic")
         body = car.get_body()
 
         if car.is_debug():

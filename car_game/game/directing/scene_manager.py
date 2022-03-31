@@ -1,46 +1,34 @@
-import csv
-import imp
-# from car_game.game.casting.car_2 import Car_2
+import random
+from turtle import position
 from constants import *
 from game.casting.animation import Animation
-from game.casting.ball import Ball
 
 #car_code
 from game.casting.car import Car
- 
+from game.casting.fruits import Fruits
 
 from game.casting.body import Body
-from game.casting.brick import Brick
 from game.casting.image import Image
 from game.casting.label import Label
 from game.casting.point import Point
-from game.casting.racket import Racket
 from game.casting.stats import Stats
 from game.casting.text import Text 
 from game.scripting.change_scene_action import ChangeSceneAction
 from game.scripting.check_over_action import CheckOverAction
-from game.scripting.collide_borders_action import CollideBordersAction
-from game.scripting.collide_brick_action import CollideBrickAction
-from game.scripting.collide_racket_action import CollideRacketAction
-from game.scripting.control_racket_action import ControlRacketAction
 
 #car_code
+from game.scripting.collide_car_action import CollideCarAction
 from game.scripting.control_car_action import ControlCarAction
-
-from game.scripting.draw_ball_action import DrawBallAction
-
-#car_code
+from game.scripting.draw_bg_action import DrawBgAction
 from game.scripting.draw_car_action import DrawCarAction
+from game.scripting.draw_traffic_action import DrawTrafficAction
+from game.scripting.draw_fruits_action import DrawFruitsAction
 
-from game.scripting.draw_bricks_action import DrawBricksAction
 from game.scripting.draw_dialog_action import DrawDialogAction
 from game.scripting.draw_hud_action import DrawHudAction
-from game.scripting.draw_racket_action import DrawRacketAction
 from game.scripting.end_drawing_action import EndDrawingAction
 from game.scripting.initialize_devices_action import InitializeDevicesAction
 from game.scripting.load_assets_action import LoadAssetsAction
-from game.scripting.move_ball_action import MoveBallAction
-from game.scripting.move_racket_action import MoveRacketAction
 
 #car_code
 from game.scripting.move_car_action import MoveCarAction
@@ -65,31 +53,27 @@ class SceneManager:
     VIDEO_SERVICE = RaylibVideoService(GAME_NAME, SCREEN_WIDTH, SCREEN_HEIGHT)
 
     CHECK_OVER_ACTION = CheckOverAction()
-    COLLIDE_BORDERS_ACTION = CollideBordersAction(PHYSICS_SERVICE, AUDIO_SERVICE)
-    COLLIDE_BRICKS_ACTION = CollideBrickAction(PHYSICS_SERVICE, AUDIO_SERVICE)
-    COLLIDE_RACKET_ACTION = CollideRacketAction(PHYSICS_SERVICE, AUDIO_SERVICE)
-    #CONTROL_RACKET_ACTION = ControlRacketAction(KEYBOARD_SERVICE)
+    #COLLIDE_BORDERS_ACTION = CollideBordersAction(PHYSICS_SERVICE, AUDIO_SERVICE)
+
+    #car_code
+    COLLIDE_CAR_ACTION = CollideCarAction(PHYSICS_SERVICE, AUDIO_SERVICE)
 
     #car_code
     CONTROL_CAR_ACTION = ControlCarAction(KEYBOARD_SERVICE)
-
-    DRAW_BALL_ACTION = DrawBallAction(VIDEO_SERVICE)
-
-    #car_code
+    DRAW_BG_ACTION = DrawBgAction(VIDEO_SERVICE)
+    DRAW_FRUITS_ACTION = DrawFruitsAction(VIDEO_SERVICE)
     DRAW_CAR_ACTION = DrawCarAction(VIDEO_SERVICE)
+    DRAW_TRAFFIC_ACTION = DrawTrafficAction(VIDEO_SERVICE)
 
-    DRAW_BRICKS_ACTION = DrawBricksAction(VIDEO_SERVICE)
     DRAW_DIALOG_ACTION = DrawDialogAction(VIDEO_SERVICE)
     DRAW_HUD_ACTION = DrawHudAction(VIDEO_SERVICE)
-    DRAW_RACKET_ACTION= DrawRacketAction(VIDEO_SERVICE)
     END_DRAWING_ACTION = EndDrawingAction(VIDEO_SERVICE)
     INITIALIZE_DEVICES_ACTION = InitializeDevicesAction(AUDIO_SERVICE, VIDEO_SERVICE)
     LOAD_ASSETS_ACTION = LoadAssetsAction(AUDIO_SERVICE, VIDEO_SERVICE)
-    MOVE_BALL_ACTION = MoveBallAction()
-    MOVE_RACKET_ACTION = MoveRacketAction()
 
     #car_code
-    MOVE_CAR_ACTION = MoveCarAction()
+    MOVE_CAR_ACTION = MoveCarAction(CAR_GROUP)
+    MOVE_TRAFFIC_ACTION = MoveCarAction(TRAFFIC_GROUP)
     
     RELEASE_DEVICES_ACTION = ReleaseDevicesAction(AUDIO_SERVICE, VIDEO_SERVICE)
     START_DRAWING_ACTION = StartDrawingAction(VIDEO_SERVICE)
@@ -115,28 +99,16 @@ class SceneManager:
     # ----------------------------------------------------------------------------------------------
     
     def _prepare_new_game(self, cast, script):
+        self._add_background(cast)
         self._add_stats(cast)
-        self._add_level(cast)
-        self._add_lives(cast)
         self._add_score(cast)
-        #self._add_ball(cast)
-        
+        self._add_score(cast, True)
+
         #car_code
-        car_number = 300
+        self._add_fruits(cast)
+        self._add_car(cast, CAR_GROUP)
+        self._add_car(cast, TRAFFIC_GROUP)
         
-        
-        car_number_2 = 600
-          
-        car_1=  self._add_car(cast, car_number_2, CAR_IMAGE_2)
-        
-        cast.add_actor("traffic", car_1)
-        car = self._add_car(cast, car_number, CAR_IMAGE)
-        
-        cast.add_actor(CAR_GROUP, car)
-      
-        
-        #self._add_bricks(cast)
-        #self._add_racket(cast)
         self._add_dialog(cast, ENTER_TO_START)
 
         self._add_initialize_script(script)
@@ -148,9 +120,6 @@ class SceneManager:
         self._add_release_script(script)
         
     def _prepare_next_level(self, cast, script):
-        self._add_ball(cast)
-        self._add_bricks(cast)
-        self._add_racket(cast)
         self._add_dialog(cast, PREP_TO_LAUNCH)
 
         script.clear_actions(INPUT)
@@ -159,9 +128,12 @@ class SceneManager:
         script.add_action(OUTPUT, PlaySoundAction(self.AUDIO_SERVICE, WELCOME_SOUND))
         
     def _prepare_try_again(self, cast, script):
-        self._add_ball(cast)
-        self._add_racket(cast)
+        #car_code
+        self._add_fruits(cast)
         self._add_dialog(cast, PREP_TO_LAUNCH)
+        self._add_car(cast, CAR_GROUP)
+        self._add_car(cast, TRAFFIC_GROUP)
+        
 
         script.clear_actions(INPUT)
         script.add_action(INPUT, TimedChangeSceneAction(IN_PLAY, 2))
@@ -169,19 +141,17 @@ class SceneManager:
         self._add_output_script(script)
 
     def _prepare_in_play(self, cast, script):
-        self._activate_ball(cast)
         cast.clear_actors(DIALOG_GROUP)
 
         script.clear_actions(INPUT)
-        #script.add_action(INPUT, self.CONTROL_RACKET_ACTION)
         script.add_action(INPUT, self.CONTROL_CAR_ACTION)
         self._add_update_script(script)
         self._add_output_script(script)
 
     def _prepare_game_over(self, cast, script):
-        self._add_ball(cast)
-        self._add_racket(cast)
-        self._add_dialog(cast, WAS_GOOD_GAME)
+        stats = cast.get_first_actor(STATS_GROUP)
+        print(stats.get_winner())
+        self._add_dialog(cast, stats.get_winner())
 
         script.clear_actions(INPUT)
         script.add_action(INPUT, TimedChangeSceneAction(NEW_GAME, 5))
@@ -191,70 +161,46 @@ class SceneManager:
     # ----------------------------------------------------------------------------------------------
     # casting methods
     # ----------------------------------------------------------------------------------------------
-    
-    def _activate_ball(self, cast):
-        ball = cast.get_first_actor(BALL_GROUP)
-        ball.release()
-
-    def _add_ball(self, cast):
-        cast.clear_actors(BALL_GROUP)
-        x = CENTER_X - BALL_WIDTH / 2
-        y = SCREEN_HEIGHT - RACKET_HEIGHT - BALL_HEIGHT  
-        position = Point(x, y)
-        size = Point(BALL_WIDTH, BALL_HEIGHT)
+    #car_code
+    def _add_background(self, cast):
+        cast.clear_actors(BG_GROUP)
+        position = Point(0, 0)
+        size = Point(SCREEN_WIDTH, SCREEN_HEIGHT)
         velocity = Point(0, 0)
         body = Body(position, size, velocity)
-        image = Image(BALL_IMAGE)
-        ball = Ball(body, image, True)
-        cast.add_actor(BALL_GROUP, ball)
+        image = Animation(BG_IMAGES, BG_RATE, BG_DELAY)
+        bg = Car(body, image)
+        cast.add_actor(BG_GROUP, bg)
     
-    #car_code
-    def _add_car(self, cast, screen, image_file):
-        cast.clear_actors(CAR_GROUP)
-        x = CENTER_X - CAR_WIDTH / 2
-        y = screen - RACKET_HEIGHT - CAR_HEIGHT  
+    def _add_car(self, cast, group = CAR_GROUP):
+        cast.clear_actors(group)
+        if ( group == CAR_GROUP ):
+            x = CENTER_X + CAR_WIDTH + 10
+            image = Image(CAR_IMAGE)
+        elif ( group == TRAFFIC_GROUP):
+            x = CENTER_X - CAR_WIDTH - 10
+            image = Image(TRAFFIC_IMAGE)
+        y = SCREEN_HEIGHT - RACKET_HEIGHT - CAR_HEIGHT  
         position = Point(x, y)
         size = Point(CAR_WIDTH, CAR_HEIGHT)
         velocity = Point(0, 0)
         body = Body(position, size, velocity)
-        image = Image(image_file)
-        
         car = Car(body, image, True)
-        return car
-        
+        cast.add_actor(group, car)
 
-    def _add_bricks(self, cast):
-        cast.clear_actors(BRICK_GROUP)
-        
-        stats = cast.get_first_actor(STATS_GROUP)
-        level = stats.get_level() % BASE_LEVELS
-        filename = LEVEL_FILE.format(level)
-
-        with open(filename, 'r') as file:
-            reader = csv.reader(file, skipinitialspace=True)
-
-            for r, row in enumerate(reader):
-                for c, column in enumerate(row):
-
-                    x = FIELD_LEFT + c * BRICK_WIDTH
-                    y = FIELD_TOP + r * BRICK_HEIGHT
-                    color = column[0]
-                    frames = int(column[1])
-                    points = BRICK_POINTS 
-                    
-                    if frames == 1:
-                        points *= 2
-                    
-                    position = Point(x, y)
-                    size = Point(BRICK_WIDTH, BRICK_HEIGHT)
-                    velocity = Point(0, 0)
-                    images = BRICK_IMAGES[color][0:frames]
-
-                    body = Body(position, size, velocity)
-                    animation = Animation(images, BRICK_RATE, BRICK_DELAY)
-
-                    brick = Brick(body, animation, points)
-                    cast.add_actor(BRICK_GROUP, brick)
+    def _add_fruits(self, cast):
+        cast.clear_actors(FRUIT_GROUP)
+        for i in range(10):
+            x = random.randint(GRASS_WIDTH, (SCREEN_WIDTH - GRASS_WIDTH - FRUIT_WIDTH))
+            y = random.randint(0, SCREEN_HEIGHT / 3)
+            points = FRUIT_POINTS
+            position = Point(x, y)
+            size = Point(FRUIT_WIDTH, FRUIT_HEIGHT)
+            velocity = Point(0, 0)
+            body = Body(position, size, velocity)
+            image = Image(FRUIT_IMAGE)
+            fruit = Fruits(body, image, points, True)
+            cast.add_actor(FRUIT_GROUP, fruit)
 
     def _add_dialog(self, cast, message):
         cast.clear_actors(DIALOG_GROUP)
@@ -277,29 +223,18 @@ class SceneManager:
         label = Label(text, position)
         cast.add_actor(LIVES_GROUP, label)
 
-    def _add_score(self, cast):
-        cast.clear_actors(SCORE_GROUP)
-        text = Text(SCORE_FORMAT, FONT_FILE, FONT_SMALL, ALIGN_CENTER)
-        position = Point(CENTER_X, HUD_MARGIN)
+    def _add_score(self, cast, second = False):
+        group = SCORE2_GROUP if second else SCORE_GROUP
+        cast.clear_actors(group)
+        text = Text(SCORE2_FORMAT, FONT_FILE, FONT_SMALL, ALIGN_CENTER)
+        position = Point(SCREEN_WIDTH - HUD_MARGIN - 85, HUD_MARGIN ) if second else Point(HUD_MARGIN + 85, HUD_MARGIN)
         label = Label(text, position)
-        cast.add_actor(SCORE_GROUP, label)
+        cast.add_actor(group, label)
 
     def _add_stats(self, cast):
         cast.clear_actors(STATS_GROUP)
         stats = Stats()
         cast.add_actor(STATS_GROUP, stats)
-
-    def _add_racket(self, cast):
-        cast.clear_actors(RACKET_GROUP)
-        x = CENTER_X - RACKET_WIDTH / 2
-        y = SCREEN_HEIGHT - RACKET_HEIGHT
-        position = Point(x, y)
-        size = Point(RACKET_WIDTH, RACKET_HEIGHT)
-        velocity = Point(0, 0)
-        body = Body(position, size, velocity)
-        animation = Animation(RACKET_IMAGES, RACKET_RATE)
-        racket = Racket(body, animation)
-        cast.add_actor(RACKET_GROUP, racket)
 
     # ----------------------------------------------------------------------------------------------
     # scripting methods
@@ -315,14 +250,14 @@ class SceneManager:
     def _add_output_script(self, script):
         script.clear_actions(OUTPUT)
         script.add_action(OUTPUT, self.START_DRAWING_ACTION)
+        script.add_action(OUTPUT, self.DRAW_BG_ACTION)
         script.add_action(OUTPUT, self.DRAW_HUD_ACTION)
-        #script.add_action(OUTPUT, self.DRAW_BALL_ACTION)
         
         #car_code
+        script.add_action(OUTPUT, self.DRAW_FRUITS_ACTION)
         script.add_action(OUTPUT, self.DRAW_CAR_ACTION)
+        script.add_action(OUTPUT, self.DRAW_TRAFFIC_ACTION)
         
-        #script.add_action(OUTPUT, self.DRAW_BRICKS_ACTION)
-        #script.add_action(OUTPUT, self.DRAW_RACKET_ACTION)
         script.add_action(OUTPUT, self.DRAW_DIALOG_ACTION)
         script.add_action(OUTPUT, self.END_DRAWING_ACTION)
 
@@ -336,11 +271,8 @@ class SceneManager:
         
     def _add_update_script(self, script):
         script.clear_actions(UPDATE)
-        #script.add_action(UPDATE, self.MOVE_BALL_ACTION)
-        #script.add_action(UPDATE, self.MOVE_RACKET_ACTION)
-        #script.add_action(UPDATE, self.COLLIDE_BORDERS_ACTION)
-        #script.add_action(UPDATE, self.COLLIDE_BRICKS_ACTION)
-        #script.add_action(UPDATE, self.COLLIDE_RACKET_ACTION)
-        #script.add_action(UPDATE, self.MOVE_RACKET_ACTION)
+        #script.add_action()
+        script.add_action(UPDATE, self.COLLIDE_CAR_ACTION)
         script.add_action(UPDATE, self.MOVE_CAR_ACTION)
+        script.add_action(UPDATE, self.MOVE_TRAFFIC_ACTION)
         script.add_action(UPDATE, self.CHECK_OVER_ACTION)

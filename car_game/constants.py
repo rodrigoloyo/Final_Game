@@ -8,8 +8,9 @@ GAME_NAME = "Cars Game"
 FRAME_RATE = 60
 
 # SCREEN
-SCREEN_WIDTH = 1040
+SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 900
+GRASS_WIDTH = 222
 CENTER_X = SCREEN_WIDTH / 2
 CENTER_Y = SCREEN_HEIGHT / 2
 
@@ -26,6 +27,7 @@ FONT_LARGE = 48
 
 # SOUND
 BOUNCE_SOUND = "car_game/assets/sounds\\boing.wav"
+CRASH_SOUND = "car_game/assets/sounds\\crash.wav"
 WELCOME_SOUND = "car_game/assets/sounds\\start.wav"
 OVER_SOUND = "car_game/assets/sounds\\over.wav"
 
@@ -35,7 +37,7 @@ ALIGN_LEFT = 1
 ALIGN_RIGHT = 2
 
 # COLORS
-BLACK = Color(0, 0, 255)
+BLACK = Color(0, 0, 0)
 WHITE = Color(255, 255, 255)
 PURPLE = Color(255, 0, 255)
 
@@ -44,6 +46,10 @@ LEFT = "left"
 RIGHT = "right"
 UP = "up"
 DOWN = "down"
+T_LEFT = "j"
+T_RIGHT = "l"
+T_UP = "i"
+T_DOWN = "k"
 SPACE = "space"
 ENTER = "enter"
 PAUSE = "p"
@@ -83,21 +89,38 @@ MAXIMUM_LIVES = 5
 
 # HUD
 HUD_MARGIN = 15
+BG_GROUP = "bg"
 LEVEL_GROUP = "level"
 LIVES_GROUP = "lives"
 SCORE_GROUP = "score"
+SCORE2_GROUP = "score2"
 LEVEL_FORMAT = "LEVEL: {}"
 LIVES_FORMAT = "LIVES: {}"
-SCORE_FORMAT = "SCORE: {}"
+SCORE_FORMAT = "PLAYER 1: {}"
+SCORE2_FORMAT = "PLAYER 2: {}"
 
 # CARS
 #car_code
 CAR_GROUP = "cars"
-CAR_IMAGE = "car_game/assets/images\\police_car.png"
-CAR_IMAGE_2 = "car_game/assets/images\\orange_flame.png"
+TRAFFIC_GROUP = "traffic"
+TRAFFIC_IMAGE = "car_game/assets/images\\police_car.png"
+CAR_IMAGE = "car_game/assets/images\\deportive_car.png"
+BG_IMAGE = "car_game/assets/images\\bg_2_0.png"
 CAR_WIDTH = 120
 CAR_HEIGHT = 254
 CAR_VELOCITY = 10
+
+#FRUITS
+FRUIT_GROUP = "fruits"
+FRUIT_IMAGE = "car_game/assets/images\\fruit.png"
+FRUIT_WIDTH = 96
+FRUIT_HEIGHT = 71
+FRUIT_VELOCITY = 10
+FRUIT_POINTS = 30
+#car_code
+BG_IMAGES = [f"car_game/assets/images\\bg_2_{i:1}.png" for i in range(0,3)]
+BG_DELAY = 0.1
+BG_RATE = 1
 
 # BALL
 BALL_GROUP = "balls"
@@ -132,4 +155,5 @@ BRICK_POINTS = 50
 DIALOG_GROUP = "dialogs"
 ENTER_TO_START = "PRESS ENTER TO IGNITE MOTORS"
 PREP_TO_LAUNCH = "PREPARING WHEELS"
+WINNER = "THE WINNER IS: "
 WAS_GOOD_GAME = "GAME OVER"

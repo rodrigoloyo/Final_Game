@@ -6,7 +6,7 @@ from game.casting.image import Image
 class Animation:
     """An animation."""
     
-    def __init__(self, images, rate = 6, delay = 0):
+    def __init__(self, images, rate = 3, delay = 0):
         """Constructs a new Animation."""
         self._delay = delay
         self._images = images

@@ -11,6 +11,15 @@ class Stats(Actor):
         self._level = 1
         self._lives = DEFAULT_LIVES
         self._score = 0
+        self._score2 = 0
+        self._winner = ''
+
+    def add_winner(self, winner):
+        print(winner)
+        self._winner = winner
+
+    def get_winner(self):
+        return self._winner
 
     def add_life(self):
         """Adds one life."""
@@ -24,6 +33,14 @@ class Stats(Actor):
             points: A number representing the points to add.
         """
         self._score += points
+    
+    def add_points2(self, points):
+        """Adds the given points to the score.
+        
+        Args:
+            points: A number representing the points to add.
+        """
+        self._score2 += points
 
     def get_level(self):
         """Gets the level.
@@ -48,6 +65,14 @@ class Stats(Actor):
             A number representing the score.
         """
         return self._score
+    
+    def get_score2(self):
+        """Gets the score.
+
+        Returns:
+            A number representing the score.
+        """
+        return self._score2
 
     def lose_life(self):
         """Removes one life."""
